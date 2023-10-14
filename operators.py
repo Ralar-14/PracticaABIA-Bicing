@@ -1,0 +1,2 @@
+from furgoneta import Furgoneta
+

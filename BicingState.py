@@ -3,13 +3,24 @@ import math
 from typing import List, Dict, Generator
 from Bicing_problem_parameters import ProblemParameters
 from abia_bicing import Estacion, Estaciones
+from furgoneta import Furgoneta, Furgonetas
+from BicingStateGenerator import StateGenerator
 
 class StateRepresentation(object):
     def __init__(self, params: ProblemParameters):
         self.params = params
-        self.estaciones = Estaciones()
-        
-        
+        self.estaciones = Estaciones(self.params.num_estaciones, self.params.num_bicicletas, self.params.seed)
+        self.furgonetas = Furgonetas(self.params.num_furgonetas, self.estaciones)
+        self.state0 = self.__generate_state0()
+
+    def __generate_state0(self):
+        for i, furgo in enumerate(self.furgonetas.lista_furgonetas):
+            if self.estaciones.lista_estaciones[i].num_bicicletas_next - self.estaciones.lista_estaciones[i].demanda
+            furgo.carga[0] = 
+            
+        self.estaciones.lista_estaciones.reverse()
+            
+
     def copy(self) -> StateRepresentation:
         return StateRepresentation(self.params)
     

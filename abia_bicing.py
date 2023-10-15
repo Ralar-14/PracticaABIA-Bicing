@@ -21,6 +21,12 @@ class Estacion(object):
         self.coordY: int = y * 100
         self.num_bicicletas_no_usadas: int = 0
         self.num_bicicletas_next: int = 0
+        
+    def __str__(self) -> str:
+        return "({self.coordX}, {self.coordY})"
+    
+    def __repr__(self) -> str:
+        return self.__str__()
 
 
 class Estaciones(object):

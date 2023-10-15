@@ -22,8 +22,11 @@ class Estacion(object):
         self.num_bicicletas_no_usadas: int = 0
         self.num_bicicletas_next: int = 0
         
+    def get_posicion(self):
+        return (self.coordX, self.coordY)
+        
     def __str__(self) -> str:
-        return "({self.coordX}, {self.coordY})"
+        return f"(Estación {self.get_posicion()}: {self.num_bicicletas_no_usadas} bicicletas no usadas, {self.num_bicicletas_next} bicicletas para la siguiente hora, demanda: {self.demanda})"
     
     def __repr__(self) -> str:
         return self.__str__()
@@ -97,6 +100,9 @@ class Estaciones(object):
             else:
                 factor = -1
             est.demanda = media_bicicletas + factor * self.rng.randint(0, int(float(media_bicicletas) * 0.5) - 1)
+            
+    def __repr__(self):
+        return f"Estaciones({self.lista_estaciones})"
 
 
 if __name__ == '__main__':

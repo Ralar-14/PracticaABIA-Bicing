@@ -8,6 +8,7 @@ class Furgoneta(object):
         self.max_bicis = 30
         self.id = id
         self.origen = origen
+        self.ToGo = ToGo
         self.carga = carga
         self.movimientos = 0
         assert carga <= self.max_bicis, "La carga no puede ser mayor que la capacidad de la furgoneta"
@@ -31,8 +32,13 @@ class Furgonetas(object):
         self.estaciones.lista_estaciones.sort(key=lambda x: x.num_bicicletas_next - x.demanda, reverse=True)
         
         for i in range(self.num_furgonetas):
-            self.lista_furgonetas.append(Furgoneta(i, self.estaciones.lista_estaciones[i].get_origen(), [self.estaciones.lista_estaciones[i].num_bicicletas_next - self.estaciones.lista_estaciones[i].demanda, 0]))
-            
+            bicis_sobrantes = self.estaciones.lista_estaciones[i].num_bicicletas_next - self.estaciones.lista_estaciones[i].demanda
+            self.lista_furgonetas.append(Furgoneta(i, self.estaciones.lista_estaciones[i].get_origen(), carga = [bicis_sobrantes if bicis_sobrantes <= 30 else 30, 0]))
+        
+        self.estaciones.lista_estaciones.sort(key=lambda x: x.demanda, reverse=True)
+
+        for i in range(self.estaciones):
+
     def __repr__(self):
         return f"Furgonetas({self.lista_furgonetas}, \n \n{self.estaciones})"
     

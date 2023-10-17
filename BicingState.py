@@ -4,7 +4,6 @@ from typing import List, Dict, Generator
 from Bicing_problem_parameters import ProblemParameters
 from abia_bicing import Estacion, Estaciones
 from furgoneta import Furgoneta, Furgonetas
-from BicingStateGenerator import StateGenerator
 
 class StateRepresentation(object):
     def __init__(self, params: ProblemParameters):
@@ -15,8 +14,8 @@ class StateRepresentation(object):
 
     def __generate_state0(self):
         for i, furgo in enumerate(self.furgonetas.lista_furgonetas):
-            if self.estaciones.lista_estaciones[i].num_bicicletas_next - self.estaciones.lista_estaciones[i].demanda
-            furgo.carga[0] = 
+            furgo.carga[0] = max(self.estaciones.lista_estaciones[i].num_bicicletas_next - self.estaciones.lista_estaciones[i].demanda, 30)
+            furgo.carga[1] = self.estaciones.lista_estaciones[].demanda
             
         self.estaciones.lista_estaciones.reverse()
             

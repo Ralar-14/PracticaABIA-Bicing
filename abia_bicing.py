@@ -104,6 +104,11 @@ class Estaciones(object):
     def __repr__(self):
         return f"Estaciones({self.lista_estaciones})"
 
+    def estacion_a_pos(self, posicion):
+        for estacion in self.lista_estaciones:
+            if estacion.get_posicion() == posicion:
+                return estacion
+        return None
 
 if __name__ == '__main__':
     """

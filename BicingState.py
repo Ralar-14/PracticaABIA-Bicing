@@ -3,6 +3,7 @@ import math
 from typing import List, Dict, Generator
 from Bicing_problem_parameters import ProblemParameters
 from abia_bicing import Estacion, Estaciones
+from operators import *
 from furgoneta import Furgoneta, Furgonetas
 
 class StateRepresentation(object):
@@ -15,10 +16,14 @@ class StateRepresentation(object):
     def __generate_state0(self):
         for i, furgo in enumerate(self.furgonetas.lista_furgonetas):
             furgo.carga[0] = max(self.estaciones.lista_estaciones[i].num_bicicletas_next - self.estaciones.lista_estaciones[i].demanda, 30)
-            furgo.carga[1] = self.estaciones.lista_estaciones[].demanda
+            furgo.carga[1] = self.estaciones.estacion_a_pos(furgo.ToGo[0]).demanda
+            # Actualizar heap de llista.estaciones 
+               
             
         self.estaciones.lista_estaciones.reverse()
-            
+        for i, furgo in enumerate(self.furgonetas.lista_furgonetas):
+            furgo.ToGo[1] = self.estaciones.lista_estaciones[i].get_posicion()
+            # Actualizar heap de llista.estaciones
 
     def copy(self) -> StateRepresentation:
         return StateRepresentation(self.params)
@@ -26,10 +31,23 @@ class StateRepresentation(object):
     def __repr__(self) -> str:
         return f"{self.params}"
         
-"""
-    def generate_actions(self) -> Generator[BinPackingOperator, None, None]:
-        
+    def generate_actions(self) -> Generator[ProblemaOperator, None, None]:
+        for furgoneta in self.furgonetas.lista_furgonetas:
+            for estacion in self.estaciones.lista_estaciones:
+                yield AñadirParada(furgoneta, estacion)
+                yield CambiarDestino(furgoneta, furgoneta.ToGo[0], estacion)
+                yield SwapDestino(furgoneta, furgoneta.ToGo[0], furgoneta, estacion.get_posicion())
+                yield EliminarParada(furgoneta, furgoneta.ToGo[0])
+                yield CambiarCargaODescarga(furgoneta, furgoneta.ToGo[0])
 
+                yield CambiarDestino(furgoneta, furgoneta.ToGo[1], estacion)
+                yield AñadirParada(furgoneta, estacion)
+                yield SwapDestino(furgoneta, furgoneta.ToGo[1], furgoneta, estacion.get_posicion())
+                yield EliminarParada(furgoneta, furgoneta.ToGo[1])
+                yield CambiarCargaODescarga(furgoneta, furgoneta.ToGo[1])
+
+
+"""
     def apply_action(self, action: BinPackingOperator) -> StateRepresentation:
         new_state = self.copy()
         if isinstance(action, MoveParcel):

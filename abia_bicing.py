@@ -22,9 +22,6 @@ class Estacion(object):
         self.num_bicicletas_no_usadas: int = 0
         self.num_bicicletas_next: int = 0
         
-    def get_posicion(self):
-        return (self.coordX, self.coordY)
-        
     def __str__(self) -> str:
         return f"(Estación {self.get_posicion()}: {self.num_bicicletas_no_usadas} bicicletas no usadas, {self.num_bicicletas_next} bicicletas para la siguiente hora, demanda: {self.demanda})"
     
@@ -103,12 +100,6 @@ class Estaciones(object):
             
     def __repr__(self):
         return f"Estaciones({self.lista_estaciones})"
-
-    def estacion_a_pos(self, posicion):
-        for estacion in self.lista_estaciones:
-            if estacion.get_posicion() == posicion:
-                return estacion
-        return None
 
 if __name__ == '__main__':
     """

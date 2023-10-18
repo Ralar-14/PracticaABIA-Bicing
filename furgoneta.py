@@ -34,10 +34,19 @@ class Furgonetas(object):
         for i in range(self.num_furgonetas):
             bicis_sobrantes = self.estaciones.lista_estaciones[i].num_bicicletas_next - self.estaciones.lista_estaciones[i].demanda
             self.lista_furgonetas.append(Furgoneta(i, self.estaciones.lista_estaciones[i].get_origen(), carga = [bicis_sobrantes if bicis_sobrantes <= 30 else 30, 0]))
+            # Actualizar heap de llista.estaciones
         
-        self.estaciones.lista_estaciones.sort(key=lambda x: x.demanda, reverse=True)
+        self.estaciones.lista_estaciones.reverse()
 
-        for i in range(self.estaciones):
+        for i, furgo in enumerate(self.lista_furgonetas):
+            furgo.ToGo[0] = self.estaciones.lista_estaciones[furgo].get_posicion()
+            furgo.carga[1] = furgo.carga[0] - (self.estaciones.lista_estaciones[furgo].demanda - self.estaciones.lista_estaciones[furgo].next)
+            self.estaciones.lista_estaciones[furgo].num_bicicletas_next -= furgo.carga[1]
+            
+            if furgo.carga[1] > 0:
+                furgo.ToGo[1] = self.estaciones.lista_estaciones[i + 1].get_posicion()
+                
+
 
     def __repr__(self):
         return f"Furgonetas({self.lista_furgonetas}, \n \n{self.estaciones})"

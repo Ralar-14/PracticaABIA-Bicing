@@ -25,36 +25,36 @@ class Furgonetas(object):
         self.num_furgonetas = num_furgonetas
         self.estaciones = estaciones
         self.lista_furgonetas = []
-        self.__genera_furgonetes_senzill()
-        
+        self.__genera_furgonetes_senzill() # Genera furgonetas de manera sencilla (cambiar a greedy si hace falta)
+    
     def __genera_furgonetas(self):
-        # Ordenamos las estaciones segun el numero de bicicletas sobrantes que tienen
-        self.estaciones.lista_estaciones.sort(key=lambda x: x.num_bicicletas_next - x.demanda, reverse=True)
-        
-        heap = []
-        heap2 = []
+        # Genera furgonetas con el algoritmo greedy haciendo dos heaps
+        h_sobran = []
+        h_faltan = []
         for est in self.estaciones.lista_estaciones:
             bicis_sobrantes = est.num_bicicletas_next - est.demanda
-            heapq.heappush(heap2, (bicis_sobrantes,est))
-            heapq.heappush(heap, (-bicis_sobrantes,est))
+            heapq.heappush(h_faltan, (bicis_sobrantes,est))
+            heapq.heappush(h_sobran, (-bicis_sobrantes,est))
 
+        # Genera furgonetas con el algoritmo greedy
         for i in range(self.num_furgonetas):
-            bicis_sobrantes = -heap[0][0]
+            bicis_sobrantes = -h_sobran[0][0]
             carga = [bicis_sobrantes if bicis_sobrantes <= 30 else 30, 0]
             self.lista_furgonetas.append(Furgoneta(i, self.heap[0][1],  carga))
-            heap[0][0] = -(bicis_sobrantes - carga[0])
-            heapq.heapify(heap)
-        
+            h_sobran[0][0] = -(bicis_sobrantes - carga[0])
+            heapq.heapify(h_sobran)
+
+        # Asigna los destinos teniendo en cuenta las bicis que les faltan
         for furgo in self.lista_furgonetas:
-            furgo.ToGo[0] = heap2[0][1]
-            heapq.heapify(heap2)
+            furgo.ToGo[0] = h_faltan[0][1]
+            heapq.heapify(h_faltan)
 
         for furgo in self.lista_furgonetas:
-            furgo.ToGo[1] = heap2[0][1]
-#################
-# No està acabat
-# ##############################################
+            furgo.ToGo[1] = h_faltan[0][1]
+            heapq.heapify(h_faltan)
 
+
+    # Genera furgonetas de manera sencilla, por orden de estaciones
     def __genera_furgonetes_senzill(self):
         i = 0
         a = 0

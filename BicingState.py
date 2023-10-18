@@ -11,19 +11,6 @@ class StateRepresentation(object):
         self.params = params
         self.estaciones = Estaciones(self.params.num_estaciones, self.params.num_bicicletas, self.params.seed)
         self.furgonetas = Furgonetas(self.params.num_furgonetas, self.estaciones)
-        self.state0 = self.__generate_state0()
-
-    def __generate_state0(self):
-        for i, furgo in enumerate(self.furgonetas.lista_furgonetas):
-            furgo.carga[0] = max(self.estaciones.lista_estaciones[i].num_bicicletas_next - self.estaciones.lista_estaciones[i].demanda, 30)
-            furgo.carga[1] = self.estaciones.estacion_a_pos(furgo.ToGo[0]).demanda
-            # Actualizar heap de llista.estaciones 
-               
-            
-        self.estaciones.lista_estaciones.reverse()
-        for i, furgo in enumerate(self.furgonetas.lista_furgonetas):
-            furgo.ToGo[1] = self.estaciones.lista_estaciones[i].get_posicion()
-            # Actualizar heap de llista.estaciones
 
     def copy(self) -> StateRepresentation:
         return StateRepresentation(self.params)
@@ -34,49 +21,85 @@ class StateRepresentation(object):
     def generate_actions(self) -> Generator[ProblemaOperator, None, None]:
         for furgoneta in self.furgonetas.lista_furgonetas:
             for estacion in self.estaciones.lista_estaciones:
-                yield AñadirParada(furgoneta, estacion)
-                yield CambiarDestino(furgoneta, furgoneta.ToGo[0], estacion)
-                yield SwapDestino(furgoneta, furgoneta.ToGo[0], furgoneta, estacion.get_posicion())
-                yield EliminarParada(furgoneta, furgoneta.ToGo[0])
-                yield CambiarCargaODescarga(furgoneta, furgoneta.ToGo[0])
+                if furgoneta.origen != estacion:
+                    yield CambiarOrigen(furgoneta, estacion)
+                if furgoneta.ToGo[0] != estacion:
+                    yield CambiarDestino(furgoneta, furgoneta.ToGo[0], estacion)
+                if furgoneta.ToGo[1] != estacion:
+                    yield CambiarDestino(furgoneta, furgoneta.ToGo[1], estacion)
+                if furgoneta.ToGo[1] == None:
+                    yield AñadirParada(furgoneta, estacion)       
+                             
+            yield EliminarParada(furgoneta, 0)
+            yield EliminarParada(furgoneta, 1)
 
-                yield CambiarDestino(furgoneta, furgoneta.ToGo[1], estacion)
-                yield AñadirParada(furgoneta, estacion)
-                yield SwapDestino(furgoneta, furgoneta.ToGo[1], furgoneta, estacion.get_posicion())
-                yield EliminarParada(furgoneta, furgoneta.ToGo[1])
-                yield CambiarCargaODescarga(furgoneta, furgoneta.ToGo[1])
+            for furgoneta2 in self.furgonetas.lista_furgonetas:
+                yield SwapDestino(furgoneta, 0, furgoneta2, 0)
+                yield SwapDestino(furgoneta, 0, furgoneta2, 1)
+                yield SwapDestino(furgoneta, 1, furgoneta2, 0)
+                yield SwapDestino(furgoneta, 1, furgoneta2, 1)
+                
+            for i in range(min(furgoneta.ToGo[0].num_bicicletas_next - furgoneta.ToGo[0].demanda, furgoneta.ToGo[0].num_bicicletas_no_usadas)):
+                yield CambiarCargaODescarga(furgoneta, 0, i)
+            
+            for i in range(furgoneta.carga[0]):    
+                yield CambiarCargaODescarga(furgoneta, 1, i)
 
+            
 
-"""
-    def apply_action(self, action: BinPackingOperator) -> StateRepresentation:
+    def apply_action(self, action: ProblemaOperator) -> StateRepresentation:
         new_state = self.copy()
-        if isinstance(action, MoveParcel):
-            p_i = action.p_i
-            h_p_i = new_state.params.v_h[p_i]
+        if isinstance(action, CambiarOrigen):
+            # Cambia el origen de la furgoneta y de forma 'inteligente' la carga
+            new_state.furgonetas.lista_furgonetas[action.furgoneta.id].origen = action.new_origen
+            new_state.furgonetas.lista_furgonetas[action.furgoneta.id].carga[0] = min(action.new_origen.num_bicicletas_next - action.new_origen.demanda, action.new_origen.num_bicicletas_no_usadas, 30)
+            new_state.furgonetas.lista_furgonetas[action.furgoneta.id].carga[1] = new_state.furgonetas.lista_furgonetas[action.furgoneta.id].carga[0] - \
+                (new_state.furgonetas.lista_furgonetas[action.furgoneta.id].ToGo[0].demanda - new_state.furgonetas.lista_furgonetas[action.furgoneta.id].ToGo[0].num_bicicletas.next) \
+                    if new_state.furgonetas.lista_furgonetas[action.furgoneta.id].carga[0] >= (new_state.furgonetas.lista_furgonetas[action.furgoneta.id].ToGo[0].demanda - new_state.furgonetas.lista_furgonetas[action.furgoneta.id].ToGo[0].num_bicicletas.next) else 0
 
-            c_j = action.c_j
-            c_k = action.c_k
-
-            new_state.v_p[p_i] = c_k
-            new_state.free_spaces[c_j] = new_state.free_spaces[c_j] + h_p_i
-            new_state.free_spaces[c_k] = new_state.free_spaces[c_k] - h_p_i
-
-        elif isinstance(action, SwapParcels):
-            p_i = action.p_i
-            p_j = action.p_j
-            h_p_i = new_state.params.v_h[p_i]
-            h_p_j = new_state.params.v_h[p_j]
-
-            c_i = new_state.v_p[p_i]
-            c_j = new_state.v_p[p_j]
-
-            new_state.v_p[p_i] = c_j
-            new_state.v_p[p_j] = c_i
-            new_state.free_spaces[c_i] = new_state.free_spaces[c_i] + h_p_i - h_p_j
-            new_state.free_spaces[c_j] = new_state.free_spaces[c_j] - h_p_i + h_p_j
+        elif isinstance(action, CambiarDestino):
+            # Cambia el destino de la furgoneta pero no la carga
+            new_state.furgonetas.lista_furgonetas[action.furgoneta.id].ToGo[0] = action.new_estacion
+            
+        elif isinstance(action, AñadirParada):
+            # Añade parada a la furgoneta y actualiza la carga de forma 'inteligente'
+            new_state.furgonetas.lista_furgonetas[action.furgoneta.id].ToGo[1] = action.estacion
+            
+            new_state.furgonetas.lista_furgonetas[action.furgoneta.id].carga[0] = min(action.estacion.num_bicicletas_next - action.estacion.demanda, action.estacion.num_bicicletas_no_usadas, 30)
+            
+            new_state.furgonetas.lista_furgonetas[action.furgoneta.id].carga[1] = new_state.furgonetas.lista_furgonetas[action.furgoneta.id].carga[0] - \
+                (new_state.furgonetas.lista_furgonetas[action.furgoneta.id].ToGo[0].demanda - new_state.furgonetas.lista_furgonetas[action.furgoneta.id].ToGo[0].num_bicicletas.next) \
+                    if new_state.furgonetas.lista_furgonetas[action.furgoneta.id].carga[0] >= (new_state.furgonetas.lista_furgonetas[action.furgoneta.id].ToGo[0].demanda - new_state.furgonetas.lista_furgonetas[action.furgoneta.id].ToGo[0].num_bicicletas.next) else 0
+                
+        elif isinstance(action, EliminarParada):
+            # Elimina parada de la furgoneta y actualiza la carga (todas las bicis se descargan en el destino 0)
+            if action.parada == 1:
+                new_state.furgonetas.lista_furgonetas[action.furgoneta.id].ToGo[1] = None
+            
+            else:
+                new_state.furgonetas.lista_furgonetas[action.furgoneta.id].ToGo[0] = new_state.furgonetas.lista_furgonetas[action.furgoneta.id].ToGo[1]
+                new_state.furgonetas.lista_furgonetas[action.furgoneta.id].ToGo[1] = None
+                
+            new_state.furgonetas.lista_furgonetas[action.furgoneta.id].carga[1] = 0
+            
+        elif isinstance(action, SwapDestino):
+            # Intercambia el destino de dos furgonetas (No toca la carga)
+            new_state.furgonetas.lista_furgonetas[action.furgoneta1.id].ToGo[action.parada_furgo1], new_state.furgonetas.lista_furgonetas[action.furgoneta2.id].ToGo[action.parada_furgo2] = action.furgoneta2.ToGo[action.parada_furgo2], action.furgoneta1.ToGo[action.parada_furgo1]
+            
+        elif isinstance(action, CambiarCargaODescarga):
+            # Cambia la carga o descarga de una furgoneta en una estación y actualiza la carga de forma 'inteligente'
+            if action.parada == 0:
+                new_state.furgonetas.lista_furgonetas[action.furgoneta.id].carga[0] = action.new_carga
+                new_state.furgonetas.lista_furgonetas[action.furgoneta.id].carga[1] = new_state.furgonetas.lista_furgonetas[action.furgoneta.id].carga[0] - \
+                    (new_state.furgonetas.lista_furgonetas[action.furgoneta.id].ToGo[0].demanda - new_state.furgonetas.lista_furgonetas[action.furgoneta.id].ToGo[0].num_bicicletas.next) \
+                        if new_state.furgonetas.lista_furgonetas[action.furgoneta.id].carga[0] >= (new_state.furgonetas.lista_furgonetas[action.furgoneta.id].ToGo[0].demanda - new_state.furgonetas.lista_furgonetas[action.furgoneta.id].ToGo[0].num_bicicletas.next) else 0
+                
+            else:
+                new_state.furgonetas.lista_furgonetas[action.furgoneta.id].carga[1] = action.new_carga
 
         return new_state
-
+    
+"""
     def heuristic_count(self) -> float:
         non_empty_containers = 0
         for c_i, free_sp in self.free_spaces.items():

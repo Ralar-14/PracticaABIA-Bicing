@@ -25,6 +25,7 @@ class CambiarOrigenYCarga(ProblemaOperator):
     def __init__(self, furgoneta: Furgoneta, new_origen: Estacion, new_carga: int):
         self.furgoneta = furgoneta
         self.new_origen = new_origen
+        self.new_carga = new_carga
 
     def __repr__(self) -> str:
         return f"{self.furgoneta} cambia su origen a {self.new_origen} y su carga en esa posición a {self.new_carga})"
@@ -33,14 +34,14 @@ class CambiarDestino(ProblemaOperator):
     """
     Classe que representa una acción de mover una furgoneta de una estación a otra
     """
-    def __init__(self, furgoneta: Furgoneta, parada: int, estacion: Estacion):
+    def __init__(self, furgoneta: Furgoneta, estacion_parada: Estacion, new_estacion: Estacion):
         self.furgoneta = furgoneta
-        self.parada = parada
-        self.estacion = estacion
+        self.estacion_parada = estacion_parada
+        self.new_estacion = new_estacion
 
 
     def __repr__(self) -> str:
-        return f"{self.furgoneta} cambia su destino {self.parada} a {self.estacion})"
+        return f"{self.furgoneta} cambia su destino {self.estacion_parada} a {self.new_estacion})"
     
 class CambiarDestinoYCarga(ProblemaOperator):
     """
@@ -70,14 +71,14 @@ class SwapDestino(ProblemaOperator):
     """
     Classe que representa una acción de intercambiar dos furgonetas de una estación a otra
     """
-    def __init__(self, furgoneta1: Furgoneta, estacion_furgo1: int, furgoneta2: Furgoneta, estacion_furgo2: int):
+    def __init__(self, furgoneta1: Furgoneta, parada_furgo1: int, furgoneta2: Furgoneta, parada_furgo2: int):
         self.furgoneta1 = furgoneta1
         self.furgoneta2 = furgoneta2
-        self.estacion_furgo1 = estacion_furgo1
-        self.estacion_furgo2 = estacion_furgo2
+        self.parada_furgo1 = parada_furgo1
+        self.parada_furgo2 = parada_furgo2
 
     def __repr__(self) -> str:
-        return f"{self.furgoneta1} cambia su destino número {self.estacion_furgo1}, por el destino número {self.estacion_furgo2} de {self.furgoneta2})"
+        return f"{self.furgoneta1} cambia su destino número {self.parada_furgo1}, por el destino número {self.parada_furgo2} de {self.furgoneta2})"
     
 class EliminarParada(ProblemaOperator):
     """
@@ -94,16 +95,12 @@ class CambiarCargaODescarga(ProblemaOperator):
     """
     Classe que representa una acción de cambiar la carga de una furgoneta
     """
-    def __init__(self, furgoneta: Furgoneta, carga: tuple, parada: int):
+    def __init__(self, furgoneta: Furgoneta, parada: Estacion, carga: int):
         self.furgoneta = furgoneta
         self.carga = carga
         self.parada = parada
-        assert parada <= 1, "No se puede modificar el número de bicis que se descargan en la última parada"
 
     def __repr__(self) -> str:
-        if self.parada == 0:
-            return f"{self.furgoneta} cambia su carga a {self.carga} en la parada de origen)"
-        else:
-            return f"{self.furgoneta} cambia su carga a {self.carga} en la parada 1 (Dejando {self.furgoneta.carga[0]-self.fur})"
+        return f"{self.furgoneta} cambia su carga en la parada {self.parada} a {self.carga})"
     
 

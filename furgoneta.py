@@ -11,8 +11,9 @@ class Furgoneta(object):
         self.ToGo = ToGo
         self.carga = carga
         self.movimientos = 0
-        assert carga[0] <= self.max_bicis, "La carga no puede ser mayor que la capacidad de la furgoneta"
-        assert id <= 20, "No puede haber mas de 20 furgonetas"
+        if carga[0] > self.max_bicis:
+            carga[0] = 30 #"La carga no puede ser mayor que la capacidad de la furgoneta"
+    #No puede haber mas de 20 furgonetas"
         
     def get_origen(self):
         return self.origen
@@ -25,18 +26,17 @@ class Furgonetas(object):
         self.num_furgonetas = num_furgonetas
         self.estaciones = estaciones
         self.lista_furgonetas = []
-        self.__genera_furgonetes_senzill() # Genera furgonetas de manera sencilla (cambiar a greedy si hace falta)
+        self.__genera_furgonetas_greedy() # Genera furgonetas de manera sencilla (cambiar a greedy si hace falta)
     
     def __genera_furgonetas_meh(self):
         # Ordenamos las estaciones segun el numero de bicicletas sobrantes que tienen
         self.estaciones.lista_estaciones.sort(key=lambda x: x.num_bicicletas_next - x.demanda, reverse=True)
         i = 0
         a = 0
-        while i < self.num_furgonetas and a < len(self.estaciones.lista_estaciones)-3:
-            self.lista_furgonetas.append(Furgoneta(i, self.estaciones.lista_estaciones[a], [self.estaciones.lista_estaciones[a+1], self.estaciones.lista_estaciones[a+2]]))
+        while i < self.num_furgonetas:
+            self.lista_furgonetas.append(Furgoneta(i, self.estaciones.lista_estaciones[a]))
             i += 1
-            a += 3
-
+            a += 1
 
     def __genera_furgonetas_greedy(self):     
         # Genera furgonetas con el algoritmo greedy haciendo dos heaps
@@ -44,8 +44,8 @@ class Furgonetas(object):
         h_faltan = []
         for i, est in enumerate(self.estaciones.lista_estaciones):
             bicis_sobrantes = est.num_bicicletas_next - est.demanda
-            heapq.heappush(h_faltan, (bicis_sobrantes,i,est)) #Minheap bicis falten
-            heapq.heappush(h_sobran, (-bicis_sobrantes,i,est)) #Maxheap bicis sobran
+            heapq.heappush(h_faltan, [bicis_sobrantes,i,est]) #Minheap bicis falten
+            heapq.heappush(h_sobran, [-bicis_sobrantes,i,est]) #Maxheap bicis sobran
 
         # Genera furgonetas con el algoritmo greedy
         for i in range(self.num_furgonetas):
@@ -55,8 +55,8 @@ class Furgonetas(object):
                 carga = [min(bicis_sobrantes, h_sobran[0][2].num_bicicletas_no_usadas, 30), 0]
             else:
                 carga = [0,0]
-
-            self.lista_furgonetas.append(Furgoneta(i, self.heap[0][2], carga))
+            #Genera el origen de las furgonetas y su carga inicial
+            self.lista_furgonetas.append(Furgoneta(i, h_sobran[0][2], carga))
             h_sobran[0][0] = -(bicis_sobrantes - carga[0])
             heapq.heapify(h_sobran)
 
@@ -71,7 +71,10 @@ class Furgonetas(object):
         
         for furgo in self.lista_furgonetas:
             bicis_faltan = furgo.ToGo[0].demanda - furgo.ToGo[0].num_bicicletas_next
-            carga[1] = (carga[0] - min(carga[0],bicis_faltan)) if bicis_faltan > 0 else carga[0] 
+            if bicis_faltan > 0:
+                furgo.carga[1] = (furgo.carga[0] - min(furgo.carga[0],bicis_faltan)) 
+            else:
+                furgo.carga[1] = furgo.carga[0] 
 
     # Genera furgonetas de manera sencilla, por orden de estaciones
     def __genera_furgonetes_senzill(self):

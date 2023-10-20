@@ -16,7 +16,7 @@ class BicingProblem(Problem):
         return state.apply_action(action)
 
     def value(self, state: StateRepresentation) -> float:
-        return -state.heuristic()
+        return state.heuristic()
 
     def goal_test(self, state: StateRepresentation) -> bool:
         return False

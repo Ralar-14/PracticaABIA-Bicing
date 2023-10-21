@@ -95,7 +95,7 @@ class Furgonetas(object):
 
         for furgoneta in self.lista_furgonetas:
             if (furgoneta.ToGo[0] is not None and furgoneta.ToGo[0] in lista_estaciones_demanda and (furgoneta.carga[0] - furgoneta.carga[1] <= lista_estaciones_demanda[furgoneta.ToGo[0]])):
-                profit += furgoneta.carga[0] - furgoneta.carga[1]
+                profit += (furgoneta.carga[0] - furgoneta.carga[1])
             elif furgoneta.ToGo[0] in lista_estaciones_demanda and lista_estaciones_demanda[furgoneta.ToGo[0]] > 0:
                 profit += lista_estaciones_demanda[furgoneta.ToGo[0]]
 

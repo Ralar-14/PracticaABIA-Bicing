@@ -87,6 +87,7 @@ class Furgonetas(object):
             a += 3
             i += 1
 
+    """
     def profit(self):
         profit = 0
         lista_estaciones_demanda = {}
@@ -105,7 +106,31 @@ class Furgonetas(object):
                 profit += lista_estaciones_demanda[furgoneta.ToGo[1]]
 
         return profit
+    """
     
+    def profit(self):
+        profit = 0
+        lista_estaciones_demanda = {}
+        for estacion in self.estaciones.lista_estaciones:
+            lista_estaciones_demanda[estacion] = estacion.num_bicicletas_next - estacion.demanda
+
+        for furgoneta in self.lista_furgonetas:
+            if (furgoneta.ToGo[0] is not None and furgoneta.ToGo[0] in self.estaciones.lista_estaciones and (furgoneta.carga[0] - furgoneta.carga[1] <= lista_estaciones_demanda[furgoneta.ToGo[0]])):
+                profit += (furgoneta.carga[0] - furgoneta.carga[1])
+            elif furgoneta.ToGo[0] in lista_estaciones_demanda and lista_estaciones_demanda[furgoneta.ToGo[0]] > 0:
+                profit += lista_estaciones_demanda[furgoneta.ToGo[0]]
+            else:
+                pass
+
+            if (furgoneta.ToGo[1] is not None and furgoneta.ToGo[1] in self.estaciones.lista_estaciones and furgoneta.carga[1] <= lista_estaciones_demanda[furgoneta.ToGo[1]]):
+                profit += furgoneta.carga[1] 
+            elif (furgoneta.ToGo[1] is not None and furgoneta.ToGo[1] in self.estaciones.lista_estaciones and lista_estaciones_demanda[furgoneta.ToGo[1]] > 0):
+                profit += lista_estaciones_demanda[furgoneta.ToGo[1]]
+            else:
+                pass
+        return profit
+
+
     def __repr__(self) -> str:
         return f"Furgonetas({self.num_furgonetas}, {self.lista_furgonetas})"
     

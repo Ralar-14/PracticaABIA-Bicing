@@ -7,7 +7,8 @@ from bicing_problem import BicingProblem
 for i in range(10):
     params = ProblemParameters(1250, 5, 25, i)
     initial_state = generate_initial_state(params)
-    print(initial_state)
+    #print(initial_state)
+    print(f"Beneficio inicial: {initial_state.heuristic()}")
     #n = simulated_annealing(BicingProblem(initial_state)) 
     n = hill_climbing(BicingProblem(initial_state))
-    print(f"Dinero ganado: {n.heuristic()}")
+    #print(f"Dinero ganado: {n.heuristic()}")

@@ -92,8 +92,7 @@ class Furgonetas(object):
             self.lista_furgonetas.append(Furgoneta(i, self.estaciones.lista_estaciones[a], [self.estaciones.lista_estaciones[a+1], self.estaciones.lista_estaciones[a+2]], carga= [0,0]))
             a += 3
             i += 1
-        
-    """
+    
     def profit(self):
         profit = 0
         lista_estaciones_demanda = {}
@@ -117,7 +116,7 @@ class Furgonetas(object):
                 profit += lista_estaciones_demanda[furgoneta.ToGo[1]]
                 lista_estaciones_demanda[furgoneta.ToGo[1]] = 0
         return profit
-    """
+
     
     """
     def profit(self):
@@ -142,8 +141,8 @@ class Furgonetas(object):
                 pass
         return profit
     """
-    
-    def profit(self): #profit deiferente
+    """
+    def profit(self): #profit diferente
         beneficis = 0
         for f in self.lista_furgonetas:
             if f.ToGo[0] is not None:
@@ -158,7 +157,7 @@ class Furgonetas(object):
                 else:
                     beneficis += (f.ToGo[1].demanda - f.ToGo[1].num_bicicletas_next) if (f.ToGo[1].num_bicicletas_next < f.ToGo[1].demanda) else 0
         return beneficis
-    
+    """
     """
     def __repr__(self) -> str:
         return f"Furgonetas({self.num_furgonetas}, {self.lista_furgonetas})"

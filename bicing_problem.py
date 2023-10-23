@@ -14,7 +14,7 @@ class BicingProblem(Problem):
 
     def result(self, state: StateRepresentation, action: ProblemaOperator) -> StateRepresentation:
         return state.apply_action(action)
-
+    
     def value(self, state: StateRepresentation) -> float:
         return state.heuristic()
 

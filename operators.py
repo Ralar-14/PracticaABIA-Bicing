@@ -95,12 +95,11 @@ class CambiarCargaODescarga(ProblemaOperator):
     """
     Classe que representa una acción de cambiar la carga de una furgoneta
     """
-    def __init__(self, furgoneta: Furgoneta, parada: Estacion, carga: int):
+    def __init__(self, furgoneta: Furgoneta, parada: Estacion):
         self.furgoneta = furgoneta
-        self.carga = carga
         self.parada = parada
 
     def __repr__(self) -> str:
-        return f"{self.furgoneta} cambia su carga en la parada {self.parada} a {self.carga})"
+        return f"{self.furgoneta} cambia su carga en la parada {self.parada}"
     
 

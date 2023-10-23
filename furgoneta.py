@@ -52,7 +52,7 @@ class Furgonetas(object):
         
         # Genera furgonetas con el algoritmo greedy
         for i in range(self.num_furgonetas):
-            bicis_sobrantes = -h_sobran[0][0] #Puede ser negativo!!!!
+            bicis_sobrantes = - h_sobran[0][0] #Puede ser negativo!!!!
         
             if 0 < min(bicis_sobrantes,h_sobran[0][2].num_bicicletas_no_usadas, 30):
                 Carga = [min(bicis_sobrantes, h_sobran[0][2].num_bicicletas_no_usadas, 30), 0] #sí que es positivo
@@ -66,7 +66,7 @@ class Furgonetas(object):
         # Asigna los destinos teniendo en cuenta las bicis que les faltan
         for furgo in self.lista_furgonetas:
             furgo.ToGo[0] = h_faltan[0][2]
-            bicis_faltan = -h_faltan[0][0] #Si es negativo, sobran bicis, si es positivo, faltan
+            bicis_faltan = - h_faltan[0][0] #Si es negativo, sobran bicis, si es positivo, faltan
             if bicis_faltan > 0:
                 furgo.carga[1] = (furgo.carga[0] - min(furgo.carga[0],bicis_faltan)) 
             else:
@@ -80,7 +80,7 @@ class Furgonetas(object):
             bicis_faltan = -h_faltan[0][0]
             h_faltan[0][0] = -(bicis_faltan - furgo.carga[1])
             heapq.heapify(h_faltan)
-       
+        print("Furgonetas: \n", self.lista_furgonetas)
 
     # Genera furgonetas de manera sencilla, por orden de estaciones
     def __genera_furgonetes_senzill(self):
@@ -97,7 +97,7 @@ class Furgonetas(object):
         profit = 0
         lista_estaciones_demanda = {}
         for estacion in self.estaciones.lista_estaciones:
-            lista_estaciones_demanda[estacion] = estacion.num_bicicletas_next - estacion.demanda
+            lista_estaciones_demanda[estacion] = estacion.demanda - estacion.num_bicicletas_next #Si es negativo, faltan bicis, si es positivo, sobran
 
         for furgoneta in self.lista_furgonetas:
             if (furgoneta.ToGo[0] is not None and furgoneta.ToGo[0] in lista_estaciones_demanda and (furgoneta.carga[0] - furgoneta.carga[1] <= lista_estaciones_demanda[furgoneta.ToGo[0]])):

@@ -10,9 +10,10 @@ from copy import deepcopy
 
 
 class StateRepresentation(object):
-    def __init__(self, params: ProblemParameters, estaciones = None, furgonetas = None):
+    estaciones: Estaciones = None
+
+    def __init__(self, params: ProblemParameters, furgonetas = None):
         self.params = params
-        self.estaciones = estaciones
         self.furgonetas = furgonetas
         self.a = 0
 
@@ -24,7 +25,7 @@ class StateRepresentation(object):
         
     def generate_actions(self) -> Generator[ProblemaOperator, None, None]:
         for furgoneta in self.furgonetas.lista_furgonetas:
-            for estacion in self.estaciones.lista_estaciones:
+            for estacion in StateRepresentation.estaciones.lista_estaciones:
                 if furgoneta.origen != estacion:
                     yield CambiarOrigen(furgoneta, estacion)
 
@@ -111,9 +112,9 @@ class StateRepresentation(object):
     
     def heuristic(self):      
         return self.furgonetas.profit()
-   
     
 def generate_initial_state(params: ProblemParameters) -> StateRepresentation:
-    estaciones = Estaciones(params.num_estaciones, params.num_bicicletas, params.seed)
-    furgonetas = Furgonetas(params.num_furgonetas, estaciones)
-    return StateRepresentation(params, estaciones, furgonetas)
+    StateRepresentation.estaciones = Estaciones(params.num_estaciones, params.num_bicicletas, params.seed)
+    Furgonetas.estaciones = StateRepresentation.estaciones
+    furgonetas = Furgonetas(params.num_furgonetas)
+    return StateRepresentation(params, furgonetas)

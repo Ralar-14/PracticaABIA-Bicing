@@ -27,8 +27,9 @@ class StateRepresentation(object):
         for furgoneta in self.furgonetas.lista_furgonetas:
             for estacion in StateRepresentation.estaciones.lista_estaciones:
                 if furgoneta.origen != estacion:
-                    yield CambiarOrigen(furgoneta, estacion)
-
+                    if estacion not in [furgoneta2.origen for furgoneta2 in self.furgonetas.lista_furgonetas]:
+                        yield CambiarOrigen(furgoneta, estacion)
+                        
                 if furgoneta.ToGo[0] != estacion:
                     yield CambiarDestino(furgoneta, furgoneta.ToGo[0], estacion)
 

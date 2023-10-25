@@ -28,7 +28,7 @@ class Furgonetas(object):
         self.num_furgonetas = num_furgonetas
         if lista_furgonetas is None:
             self.lista_furgonetas = []
-            self.__genera_furgonetas_sencillo() # Genera furgonetas de manera sencilla (cambiar a greedy si hace falta)
+            self.__genera_furgonetas_greedy() # Genera furgonetas de manera sencilla (cambiar a greedy si hace falta)
 
         else:
             self.lista_furgonetas = lista_furgonetas
@@ -41,46 +41,50 @@ class Furgonetas(object):
 
         Furgonetas.estaciones.lista_estaciones.sort(key=lambda x: x.num_bicicletas_next - x.demanda, reverse=True)
         i = 0
-        while i < self.num_furgonetas:
-            self.lista_furgonetas.append(Furgoneta(i, Furgonetas.estaciones.lista_estaciones[i], [Furgonetas.estaciones.lista_estaciones[self.num_furgonetas-i], Furgonetas.estaciones.lista_estaciones[self.num_furgonetas-(i+1)]],[0,0]))
+        while i < self.num_furgonetas and i < len(Furgonetas.estaciones.lista_estaciones):
+            self.lista_furgonetas.append(Furgoneta(i, Furgonetas.estaciones.lista_estaciones[i], [Furgonetas.estaciones.lista_estaciones[len(Furgonetas.estaciones.lista_estaciones)-1-i], Furgonetas.estaciones.lista_estaciones[len(Furgonetas.estaciones.lista_estaciones)-2-i]],[0,0]))
             i += 1
 
-
+ 
     def __genera_furgonetas_greedy(self):     
         # Genera furgonetas con el algoritmo greedy haciendo dos heaps
         Furgonetas.estaciones.lista_estaciones.sort(key=lambda x: x.num_bicicletas_next - x.demanda, reverse=True)
         i = 0
-        while i < self.num_furgonetas:
-            self.lista_furgonetas.append(Furgoneta(i, Furgonetas.estaciones.lista_estaciones[i]))
+        while i < self.num_furgonetas and i < len(Furgonetas.estaciones.lista_estaciones):
+            self.lista_furgonetas.append(Furgoneta(i, Furgonetas.estaciones.lista_estaciones[i],[None, None],[0,0]))
             self.lista_furgonetas[i].carga[0] = max(min(self.lista_furgonetas[i].origen.num_bicicletas_next - self.lista_furgonetas[i].origen.demanda, self.lista_furgonetas[i].origen.num_bicicletas_no_usadas, 30), 0)
             
             i += 1
         
         h_faltan = []
-        for i, est in enumerate(Furgonetas.estaciones.lista_estaciones):
+        for i, est in enumerate(self.estaciones.lista_estaciones):
             bicis_sobrantes = est.num_bicicletas_next - est.demanda #Si es negativo, faltan bicis, si es positivo, sobran
             heapq.heappush(h_faltan, [bicis_sobrantes,i,est]) #Minheap bicis falta
-
+        
         # Asigna los destinos teniendo en cuenta las bicis que les faltan
         for furgo in self.lista_furgonetas:
             furgo.ToGo[0] = h_faltan[0][2]
             bicis_faltan = heapq.heappop(h_faltan) #Si es negativo, sobran bicis, si es positivo, faltan
-            if -bicis_faltan[0] > 0:
-                furgo.carga[1] = (furgo.carga[0] - min(furgo.carga[0],-bicis_faltan[0])) 
+            
+            
+            if -(bicis_faltan[0]) > 0:
+                furgo.carga[1] = (furgo.carga[0] - min(furgo.carga[0],-(bicis_faltan[0]))) 
             else:
                 furgo.carga[1] = furgo.carga[0]
-
+            
             nou_elem = -(-bicis_faltan[0] - (furgo.carga[0]-furgo.carga[1]))
             h_faltan.append([nou_elem, bicis_faltan[1], furgo.ToGo[0]])
             heapq.heapify(h_faltan)
-
+            
+            
         for furgo in self.lista_furgonetas:
             furgo.ToGo[1] = h_faltan[0][2]
             bicis_faltan = heapq.heappop(h_faltan)
             nou_elem = -(-bicis_faltan[0] - furgo.carga[1])
             h_faltan.append([nou_elem, bicis_faltan[1], furgo.ToGo[1]])
             heapq.heapify(h_faltan)
-            
+                
+    
     # Genera furgonetas de manera sencilla, por orden de estaciones
     def __genera_furgonetas_sencillo(self):
         i = 0

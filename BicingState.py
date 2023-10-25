@@ -18,7 +18,7 @@ class StateRepresentation(object):
         self.a = 0
 
     def copy(self) -> StateRepresentation:
-        return deepcopy(self)
+        return StateRepresentation(self.params, self.furgonetas.copy())
     
     def __repr__(self) -> str:
         return f"{self.params}"
@@ -35,14 +35,15 @@ class StateRepresentation(object):
                 if furgoneta.ToGo[1] != estacion:
                     yield CambiarDestino(furgoneta, furgoneta.ToGo[1], estacion)
 
-
             for furgoneta2 in self.furgonetas.lista_furgonetas:
                 yield SwapDestino(furgoneta, 0, furgoneta2, 0)
                 yield SwapDestino(furgoneta, 0, furgoneta2, 1)
                 yield SwapDestino(furgoneta, 1, furgoneta2, 0)
                 yield SwapDestino(furgoneta, 1, furgoneta2, 1)
                 
-                yield CambiarCargaODescarga(furgoneta, 0)
+            yield CambiarCargaODescarga(furgoneta, 0)
+            yield CambiarCargaODescarga(furgoneta, 1)
+            yield EliminarParada(furgoneta, 1)
 
             
 
@@ -76,7 +77,7 @@ class StateRepresentation(object):
                     furgo_nueva.carga[1] = 0
 
         elif isinstance(action, SwapDestino):
-            # Intercambia el destino de dos furgonetas (No toca la carga)
+            # Intercambia el destino de dos furgonetas tambien actualiza la carga de forma 'inteligente'
             new_state.furgonetas.lista_furgonetas[action.furgoneta1.id].ToGo[action.parada_furgo1], new_state.furgonetas.lista_furgonetas[action.furgoneta2.id].ToGo[action.parada_furgo2] = action.furgoneta2.ToGo[action.parada_furgo2], action.furgoneta1.ToGo[action.parada_furgo1]
             furgo_nueva1 = new_state.furgonetas.lista_furgonetas[action.furgoneta1.id]
             furgo_nueva2 = new_state.furgonetas.lista_furgonetas[action.furgoneta1.id]
@@ -107,7 +108,19 @@ class StateRepresentation(object):
                     (furgo_nueva.ToGo[0].demanda - furgo_nueva.ToGo[0].num_bicicletas_next)
                 else:
                     furgo_nueva.carga[1] = 0
-            
+                
+        elif isinstance(action, EliminarParada):
+            #Elimina la carga de una furgoneta en una estación
+            furgo_nueva = new_state.furgonetas.lista_furgonetas[action.furgoneta.id]
+            furgo_nueva.carga[action.parada] = 0
+
+            if action.parada == 0:
+                furgo_nueva.carga[1] = 0
+
+        elif isinstance(action, MultiOperator):
+            new_state = self.apply_action(action.operator)
+            new_state = new_state.apply_action(action.operator2)
+                        
         return new_state
     
     def heuristic(self):      

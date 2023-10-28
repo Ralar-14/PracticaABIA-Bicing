@@ -30,15 +30,15 @@ class StateRepresentation(object):
                     if estacion not in [furgoneta2.origen for furgoneta2 in self.furgonetas.lista_furgonetas]:
                         if furgoneta.origen != estacion and furgoneta.ToGo[0] != estacion and furgoneta.ToGo[1] != estacion:
                             yield CambiarOrigen(furgoneta, estacion)
-                        for i in range(max(min(furgoneta.origen.num_bicicletas_next - furgoneta.origen.demanda, furgoneta.origen.num_bicicletas_no_usadas, 30), 0)):
-                            if furgoneta.ToGo[0] != estacion and furgoneta.ToGo[1] != estacion:
-                                yield MultiOperator(CambiarOrigen(furgoneta, estacion), NuevaCarga(furgoneta,0 ,i))
-                        for i in range(max(min(furgoneta.ToGo[0].num_bicicletas_next - furgoneta.ToGo[0].demanda, furgoneta.ToGo[0].num_bicicletas_no_usadas, 30), 0)):
-                            if furgoneta.ToGo[0] != estacion and furgoneta.ToGo[1] != estacion:
-                                yield MultiOperator(CambiarOrigen(furgoneta, estacion), NuevaCarga(furgoneta,0 ,i))
+                        if furgoneta.ToGo[0] != estacion and furgoneta.ToGo[1] != estacion:
+                            for i in range(max(min(estacion.num_bicicletas_next - estacion.demanda, estacion.num_bicicletas_no_usadas, 30), 0)):
+                                yield MultiOperator(CambiarOrigen(furgoneta, estacion), NuevaCarga(furgoneta, 0 ,i))
 
                 if furgoneta.origen != estacion and furgoneta.ToGo[0] != estacion and furgoneta.ToGo[1] != estacion:
                     yield CambiarDestino(furgoneta, furgoneta.ToGo[0], estacion)
+                    for i in range(max(min(estacion.demanda - estacion.num_bicicletas_next, estacion.num_bicicletas_no_usadas, 30), 0)): 
+                        yield CambiarDestinoYCarga(furgoneta, 0, estacion, i)
+                        yield CambiarDestinoYCarga(furgoneta, 1, estacion, i)
                     
                 if furgoneta.origen != estacion and furgoneta.ToGo[0] != estacion and furgoneta.ToGo[1] != estacion:
                     yield CambiarDestino(furgoneta, furgoneta.ToGo[1], estacion)
@@ -46,22 +46,30 @@ class StateRepresentation(object):
             for furgoneta2 in self.furgonetas.lista_furgonetas:
                 if furgoneta.origen != furgoneta2.ToGo[0] and furgoneta2.origen != furgoneta.ToGo[0]:
                     yield SwapDestino(furgoneta, 0, furgoneta2, 0)
+                        
                 if furgoneta.origen != furgoneta2.ToGo[1] and furgoneta2.origen != furgoneta.ToGo[0]:
                     yield SwapDestino(furgoneta, 0, furgoneta2, 1)
+                        
                 if furgoneta.origen != furgoneta2.ToGo[0] and furgoneta2.origen != furgoneta.ToGo[1]:
                     yield SwapDestino(furgoneta, 1, furgoneta2, 0)
+                    
                 if furgoneta.origen != furgoneta2.ToGo[1] and furgoneta2.origen != furgoneta.ToGo[1]:
                     yield SwapDestino(furgoneta, 1, furgoneta2, 1)
                 
             yield CambiarCargaODescarga(furgoneta, 0)
+            
             yield CambiarCargaODescarga(furgoneta, 1)
+            
             yield EliminarParada(furgoneta, 1)
-
+            
             for i in range(max(min(furgoneta.origen.num_bicicletas_next - furgoneta.origen.demanda, furgoneta.origen.num_bicicletas_no_usadas, 30), 0)):
-                yield NuevaCarga(furgoneta,0 ,i)
+                yield NuevaCarga(furgoneta, 0 ,i)
             
-
+            aux_for_loop = max(min(furgoneta.ToGo[0].num_bicicletas_next - furgoneta.ToGo[0].demanda, furgoneta.ToGo[0].num_bicicletas_no_usadas, 30), 0)
             
+            if furgoneta.carga[0] > aux_for_loop:    
+                for i in range(furgoneta.carga[0] - aux_for_loop):
+                    yield NuevaCarga(furgoneta, 1 ,i)
 
     def apply_action(self, action: ProblemaOperator) -> StateRepresentation:
         new_state = self.copy()
@@ -95,6 +103,12 @@ class StateRepresentation(object):
                     (furgo_nueva.ToGo[0].demanda - furgo_nueva.ToGo[0].num_bicicletas_next)
                 else:
                     furgo_nueva.carga[1] = 0
+                    
+        elif isinstance(action, CambiarDestinoYCarga):
+            furgo_nueva = new_state.furgonetas.lista_furgonetas[action.furgoneta.id]
+            furgo_nueva.ToGo[action.estacion_parada] = action.new_estacion
+            if action.nueva_carga <= furgo_nueva.carga[0]:
+                furgo_nueva.carga[action.estacion_parada] = furgo_nueva.carga[0] - action.nueva_carga
 
         elif isinstance(action, SwapDestino):
             # Intercambia el destino de dos furgonetas tambien actualiza la carga de forma 'inteligente'

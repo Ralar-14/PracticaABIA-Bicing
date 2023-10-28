@@ -14,7 +14,7 @@ from bicing_problem import BicingProblem
     print(f"Dinero ganado: {n.heuristic()}")"""
 
 start = time.time()
-params = ProblemParameters(1250, 5, 25, 45)
+params = ProblemParameters(1250, 5, 25, 42)
 initial_state = generate_initial_state(params)
 print(initial_state.furgonetas.lista_furgonetas)
 print(f"Beneficio inicial: {initial_state.heuristic()}")
@@ -27,4 +27,3 @@ print(f"Gasolina: {n.furgonetas.gas_cost()}")
 print(n.furgonetas.lista_furgonetas)
 end = time.time()
 print(end - start, "seconds")
-

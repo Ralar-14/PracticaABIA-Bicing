@@ -12,6 +12,12 @@ class Furgoneta(object):
         self.carga = carga
         self.movimientos = 0
         
+    def distancia(self, i) -> int:
+        if i == 0:
+            return (abs(self.origen.coordX - self.ToGo[0].coordX) + abs(self.origen.coordY - self.ToGo[0].coordY))/1000
+        elif i == 1:
+            return (abs(self.ToGo[0].coordX - self.ToGo[1].coordX) + abs(self.ToGo[0].coordY - self.ToGo[1].coordY))/1000
+
     def get_origen(self):
         return self.origen
     
@@ -35,6 +41,7 @@ class Furgonetas(object):
             
     def copy(self):
         return Furgonetas(self.num_furgonetas, [furgoneta.copy() for furgoneta in self.lista_furgonetas])
+
     
     def __genera_furgonetas_meh(self):
         # Ordenamos las estaciones segun el numero de bicicletas sobrantes que tienen
@@ -103,6 +110,9 @@ class Furgonetas(object):
             lista_estaciones_demanda[estacion] = estacion.demanda - estacion.num_bicicletas_next #Si es negativo, faltan bicis, si es positivo, sobran
 
         for furgoneta in self.lista_furgonetas:
+            lista_estaciones_demanda[furgoneta.origen] -= furgoneta.carga[0]
+
+        for furgoneta in self.lista_furgonetas:
             if (furgoneta.ToGo[0] is not None and furgoneta.ToGo[0] in lista_estaciones_demanda and (furgoneta.carga[0] - furgoneta.carga[1] <= lista_estaciones_demanda[furgoneta.ToGo[0]])):
                 profit += (furgoneta.carga[0] - furgoneta.carga[1])
                 lista_estaciones_demanda[furgoneta.ToGo[0]] -= (furgoneta.carga[0] - furgoneta.carga[1])
@@ -120,7 +130,13 @@ class Furgonetas(object):
                 lista_estaciones_demanda[furgoneta.ToGo[1]] = 0
         return profit
 
-    
+    def gas_cost(self) -> int:
+        cost = 0
+        for furgoneta in self.lista_furgonetas:
+            cost += furgoneta.distancia(0) * ((9+furgoneta.carga[0])//10)
+            cost += furgoneta.distancia(1) * ((9+furgoneta.carga[1])//10)
+        return cost
+
     """
     def profit(self):
         profit = 0

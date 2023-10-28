@@ -66,6 +66,15 @@ class CambiarCargaODescarga(ProblemaOperator):
     def __repr__(self) -> str:
         return f"{self.furgoneta} cambia su carga en la parada {self.parada}"
     
+class NuevaCarga(ProblemaOperator):
+    def __init__(self, furgoneta: Furgoneta, parada: int, nueva_carga: int):
+        self.furgoneta = furgoneta
+        self.parada = parada
+        self.nueva_carga = nueva_carga
+
+    def __repr__(self) -> str:
+        return f"{self.furgoneta} cambia su carga en la parada {self.parada} a {self.nueva_carga}"
+    
 class MultiOperator(ProblemaOperator):
     def __init__(self, operator: ProblemaOperator, operator2: ProblemaOperator):
         self.operator = operator

@@ -29,12 +29,13 @@ class Furgoneta(object):
     
 class Furgonetas(object):
     estaciones: Estaciones = None
+    parameters: ProblemParameters = None
 
     def __init__(self, num_furgonetas: int, lista_furgonetas: list = None) -> None:
         self.num_furgonetas = num_furgonetas
         if lista_furgonetas is None:
             self.lista_furgonetas = []
-            self.__genera_furgonetas_greedy() # Genera furgonetas de manera sencilla (cambiar a greedy si hace falta)
+            [self.__genera_furgonetas_greedy, self.__genera_furgonetas_meh, self.__genera_furgonetas_sencillo][self.parameters.inital_strat]() # Genera furgonetas de manera sencilla (cambiar a greedy si hace falta)
 
         else:
             self.lista_furgonetas = lista_furgonetas

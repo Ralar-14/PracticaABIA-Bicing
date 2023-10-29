@@ -76,11 +76,12 @@ class NuevaCarga(ProblemaOperator):
         return f"{self.furgoneta} cambia su carga en la parada {self.parada} a {self.nueva_carga}"
     
 class CambiarDestinoYCarga(ProblemaOperator):
-    def __init__(self, furgoneta: Furgoneta, estacion_parada: int, new_estacion: Estacion, nueva_carga: int):
+    def __init__(self, furgoneta: Furgoneta, estacion_parada: int, new_estacion: Estacion, nueva_carga: int, carga_to_change: int):
         self.furgoneta = furgoneta
         self.estacion_parada = estacion_parada
         self.new_estacion = new_estacion
         self.nueva_carga = nueva_carga
+        self.carga_to_change = carga_to_change
 
     def __repr__(self) -> str:
         return f"{self.furgoneta} cambia su destino {self.estacion_parada} a {self.new_estacion} y su carga a {self.nueva_carga})"

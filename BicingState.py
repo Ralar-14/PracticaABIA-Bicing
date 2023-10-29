@@ -185,14 +185,6 @@ class StateRepresentation(object):
                     (furgo_nueva.ToGo[0].demanda - furgo_nueva.ToGo[0].num_bicicletas_next)
                 else:
                     furgo_nueva.carga[1] = 0
-                
-        elif isinstance(action, EliminarParada):
-            #Elimina la carga de una furgoneta en una estación
-            furgo_nueva = new_state.furgonetas.lista_furgonetas[action.furgoneta.id]
-            furgo_nueva.carga[action.parada] = 0
-
-            if action.parada == 0:
-                furgo_nueva.carga[1] = 0
 
         elif isinstance(action, MultiOperator):
             new_state = self.apply_action(action.operator)

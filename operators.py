@@ -44,17 +44,6 @@ class SwapDestino(ProblemaOperator):
     def __repr__(self) -> str:
         return f"{self.furgoneta1} cambia su destino número {self.parada_furgo1}, por el destino número {self.parada_furgo2} de {self.furgoneta2})"
     
-class EliminarParada(ProblemaOperator):
-    """
-    Classe que representa una acción de eliminar una parada de una furgoneta
-    """
-    def __init__(self, furgoneta: Furgoneta, parada: int):
-        self.furgoneta = furgoneta
-        self.parada = parada
-
-    def __repr__(self) -> str:
-        return f"{self.furgoneta} elimina su parada número {self.parada})"
-    
 class CambiarCargaODescarga(ProblemaOperator):
     """
     Classe que representa una acción de cambiar la carga de una furgoneta

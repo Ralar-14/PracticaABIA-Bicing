@@ -18,15 +18,14 @@ for i in range(2 ** 6):
 with open('results_experiment1.csv', 'w', newline='') as archivo_csv:
         escritor_csv = csv.writer(archivo_csv)
         
-        escritor_csv.writerow(['Operatos_used, Mean_time, Mean_profit'])
+        escritor_csv.writerow(['Operators_used', 'Mean_time', 'Mean_profit'])
         archivo_csv.close()
         
 for operators in alternativas_binarias:
     with open('experiment1.csv', 'w', newline='') as archivo_csv:
         escritor_csv = csv.writer(archivo_csv)
         
-        escritor_csv.writerow(['Time, Profit, Seed'])
-        
+        escritor_csv.writerow(['Time', 'Profit', 'Seed'])
         
         for seed in range(5):
             for _ in range(20):

@@ -13,7 +13,7 @@ with open('results_experiment4.csv', 'w', newline='') as archivo_csv:
     
     for state_proved in range(1,6):
         tiempos = []            
-        for i in range(10):
+        for i in range(20):
             start = time.time()
             params = ProblemParameters(state_proved*1250, state_proved*5, state_proved*25, 42, 0, True)
             initial_state = generate_initial_state(params)

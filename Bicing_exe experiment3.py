@@ -58,7 +58,7 @@ for k in range(5, 150, 5):
             escritor_csv = csv.writer(archivo_csv)
             escritor_csv.writerow(['Time', 'Profit', 'Seed'])
                     
-            for i in range(4):
+            for i in range(20):
                 start = time.time()
                 params = ProblemParameters(1250, 5, 25, i, 0, True)
                 initial_state = generate_initial_state(params)

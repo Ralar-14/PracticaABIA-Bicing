@@ -89,6 +89,7 @@ class StateRepresentation(object):
                     furgo_nueva.carga[1] = 0
 
         elif isinstance(action, NuevaCarga):
+            #Cambia la carga de una furgoneta en una estación.
             furgo_nueva = new_state.furgonetas.lista_furgonetas[action.furgoneta.id]
             furgo_nueva.carga[action.parada] = action.nueva_carga
 
@@ -105,6 +106,7 @@ class StateRepresentation(object):
                     furgo_nueva.carga[1] = 0
                     
         elif isinstance(action, CambiarDestinoYCarga):
+            # Cambia el destino de la furgoneta y la carga.
             furgo_nueva = new_state.furgonetas.lista_furgonetas[action.furgoneta.id]
             furgo_nueva.ToGo[action.estacion_parada] = action.new_estacion
             furgo_nueva.carga[action.carga_to_change] = action.nueva_carga
@@ -150,6 +152,7 @@ class StateRepresentation(object):
                     furgo_nueva.carga[1] = 0
 
         elif isinstance(action, MultiOperator):
+            # Hace dos acciones a la vez. (CambiarOrigen y NuevaCarga en nuestra implementación)
             new_state = self.apply_action(action.operator)
             new_state = new_state.apply_action(action.operator2)
                         

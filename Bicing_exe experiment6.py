@@ -15,7 +15,7 @@ with open('results_experiment6_with_free_gas.csv', 'w', newline='') as archivo_c
         tiempos = []
         profit = []
         for seed in range(5):
-            for _ in range(10):
+            for _ in range(20):
                 start = time.time()
                 params = ProblemParameters(1250, 5*state_proved, 25, seed, free_gas=True)
                 initial_state = generate_initial_state(params)

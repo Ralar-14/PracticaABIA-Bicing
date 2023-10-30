@@ -7,7 +7,7 @@ import csv
 import numpy as np
 
 start = time.time()
-params = ProblemParameters(1250, 5, 25, 42, 0, False)
+params = ProblemParameters(1250, 5, 25, 42, 0, True)
 initial_state = generate_initial_state(params)
 n = hill_climbing(BicingProblem(initial_state))
 #n = simulated_annealing(BicingProblem(initial_state))

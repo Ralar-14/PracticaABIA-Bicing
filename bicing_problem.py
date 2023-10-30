@@ -11,6 +11,8 @@ class BicingProblem(Problem):
 
     def actions(self, state: StateRepresentation) -> Generator[ProblemaOperator, None, None]:
         return state.generate_actions()
+    
+    #Cambiar a state.generate_actions_simulated annealing() si se va a utilizar este algoritmo
 
     def result(self, state: StateRepresentation, action: ProblemaOperator) -> StateRepresentation:
         return state.apply_action(action)

@@ -15,7 +15,7 @@ with open('results_experiment6_with_free_gas.csv', 'w', newline='') as archivo_c
         tiempos = []
         profit = []
         for seed in range(5):
-            for _ in range(1):
+            for _ in range(10):
                 start = time.time()
                 params = ProblemParameters(1250, 5*state_proved, 25, seed, free_gas=True)
                 initial_state = generate_initial_state(params)
@@ -31,13 +31,3 @@ with open('results_experiment6_with_free_gas.csv', 'w', newline='') as archivo_c
             escritor_csv = csv.writer(archivo_csv)
             escritor_csv.writerow([state_proved, media_tiempo, media_profit])
             archivo_csv.close()
-
-# print(initial_state.furgonetas.lista_furgonetas)
-# print(f"Beneficio inicial: {initial_state.heuristic()}")
-# n = simulated_annealing(BicingProblem(initial_state)) 
-# print(f"Dinero ganado: {n.heuristic()}")
-# print(f"Profit: {n.furgonetas.profit()}")
-# print(f"Gasolina: {n.furgonetas.gas_cost()}")
-# print(f"Numero de acciones: {n.a}")
-# print(n.furgonetas.lista_furgonetas)
-# print(end - start, "seconds")

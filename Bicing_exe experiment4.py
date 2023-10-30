@@ -27,13 +27,3 @@ with open('results_experiment4.csv', 'w', newline='') as archivo_csv:
             escritor_csv = csv.writer(archivo_csv)
             escritor_csv.writerow([state_proved, media_tiempo])
             archivo_csv.close()
-
-# print(initial_state.furgonetas.lista_furgonetas)
-# print(f"Beneficio inicial: {initial_state.heuristic()}")
-# n = simulated_annealing(BicingProblem(initial_state)) 
-# print(f"Dinero ganado: {n.heuristic()}")
-# print(f"Profit: {n.furgonetas.profit()}")
-# print(f"Gasolina: {n.furgonetas.gas_cost()}")
-# print(f"Numero de acciones: {n.a}")
-# print(n.furgonetas.lista_furgonetas)
-# print(end - start, "seconds")

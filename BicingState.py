@@ -37,10 +37,6 @@ class StateRepresentation(object):
                             yield CambiarDestinoYCarga(furgoneta, 1, estacion, i, 0)
                             yield CambiarDestinoYCarga(furgoneta, 0, estacion, i, 1)
                             yield CambiarDestinoYCarga(furgoneta, 1, estacion, i, 1)
-                            
-                    if self.params.operators_used[2]:
-                        yield CambiarDestino(furgoneta, furgoneta.ToGo[0], estacion)
-                        yield CambiarDestino(furgoneta, furgoneta.ToGo[1], estacion)
                         
             if self.params.operators_used[3]:
                 
@@ -56,23 +52,6 @@ class StateRepresentation(object):
                         
                     if furgoneta.origen != furgoneta2.ToGo[1] and furgoneta2.origen != furgoneta.ToGo[1]:
                         yield SwapDestino(furgoneta, 1, furgoneta2, 1)
-                        
-            if self.params.operators_used[4]:  
-                      
-                yield CambiarCargaODescarga(furgoneta, 0)
-            
-                yield CambiarCargaODescarga(furgoneta, 1)
-            
-            if self.params.operators_used[5]:
-                
-                for i in range(max(min(furgoneta.origen.num_bicicletas_next - furgoneta.origen.demanda, furgoneta.origen.num_bicicletas_no_usadas, 30), 0)):
-                    yield NuevaCarga(furgoneta, 0 ,i)
-                
-                aux_for_loop = max(min(furgoneta.ToGo[0].num_bicicletas_next - furgoneta.ToGo[0].demanda, furgoneta.ToGo[0].num_bicicletas_no_usadas, 30), 0)
-                
-                if furgoneta.carga[0] > aux_for_loop:    
-                    for i in range(furgoneta.carga[0] - aux_for_loop):
-                        yield NuevaCarga(furgoneta, 1 ,i)
 
     def generate_actions_simulated_annealing(self) -> Generator[ProblemaOperator, None, None]:
             
@@ -91,18 +70,6 @@ class StateRepresentation(object):
                 
                 yield CambiarCargaODescarga(furgoneta, 0)
                 yield CambiarCargaODescarga(furgoneta, 1)
-            
-            if self.params.operators_used[5]:
-                
-                for i in range(max(min(furgoneta.origen.num_bicicletas_next - furgoneta.origen.demanda, furgoneta.origen.num_bicicletas_no_usadas, 30), 0)):
-                    yield NuevaCarga(furgoneta, 0 ,i)
-                
-                aux_for_loop = max(min(furgoneta.ToGo[0].num_bicicletas_next - furgoneta.ToGo[0].demanda, furgoneta.ToGo[0].num_bicicletas_no_usadas, 30), 0)
-                
-                if furgoneta.carga[0] > aux_for_loop:    
-                    for i in range(furgoneta.carga[0] - aux_for_loop):
-                        yield NuevaCarga(furgoneta, 1 ,i)
-               
 
     def apply_action(self, action: ProblemaOperator) -> StateRepresentation:
         new_state = self.copy()

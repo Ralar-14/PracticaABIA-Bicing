@@ -11,9 +11,9 @@ with open('results_experiment3.csv', 'w', newline='') as archivo_csv:
     escritor_csv.writerow(['State_proved', 'Mean_time', 'Mean_profit'])
     archivo_csv.close()
 
-for k in range(4, 100, 4):
-    for lam in range(0, 10000, 100):
-        for limit in range(0, 1000, 250):
+for k in range(0, 101, 10):
+    for lam in range(0, 10001, 1000):
+        for limit in range(0, 751, 250):
             with open('experiment3.csv', 'w', newline='') as archivo_csv:
                 escritor_csv = csv.writer(archivo_csv)
                 escritor_csv.writerow(['Time', 'Profit', 'Seed'])

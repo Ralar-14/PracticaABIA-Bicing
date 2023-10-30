@@ -9,8 +9,8 @@ import numpy as np
 start = time.time()
 params = ProblemParameters(1250, 5, 25, 42, 0, True)
 initial_state = generate_initial_state(params)
-n = hill_climbing(BicingProblem(initial_state))
-#n = simulated_annealing(BicingProblem(initial_state), lambda t, k=20, lam=0.005, limit=650: (k * np.exp(-lam * t) if t < limit else 0))
+#n = hill_climbing(BicingProblem(initial_state))
+n = simulated_annealing(BicingProblem(initial_state), lambda t, k=20, lam=0.005, limit=650: (k * np.exp(-lam * t) if t < limit else 0))
 end = time.time()
 
 print(f"Dinero ganado: {n.heuristic()}")

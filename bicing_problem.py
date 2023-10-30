@@ -10,7 +10,7 @@ class BicingProblem(Problem):
         super().__init__(initial_state)
 
     def actions(self, state: StateRepresentation) -> Generator[ProblemaOperator, None, None]:
-        return state.generate_actions_simulated_annealing()
+        return state.generate_actions()
 
     def result(self, state: StateRepresentation, action: ProblemaOperator) -> StateRepresentation:
         return state.apply_action(action)
